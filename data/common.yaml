@@ -1,0 +1,50 @@
+---
+paw_ansible_role_kubernetes::kubernetes_version: '1.33'
+paw_ansible_role_kubernetes::kubernetes_config_kubeadm_apiversion: v1beta4
+paw_ansible_role_kubernetes::kubenetes_config_kubelet_apiversion: v1beta1
+paw_ansible_role_kubernetes::kubernetes_config_kubeproxy_apiversion: v1alpha1
+paw_ansible_role_kubernetes::kubernetes_packages:
+- name: kubelet
+  state: present
+- name: kubectl
+  state: present
+- name: kubeadm
+  state: present
+- name: kubernetes-cni
+  state: present
+paw_ansible_role_kubernetes::kubernetes_version_rhel_package: '1.33'
+paw_ansible_role_kubernetes::kubernetes_role: control_plane
+paw_ansible_role_kubernetes::kubernetes_kubelet_extra_args: ''
+paw_ansible_role_kubernetes::kubernetes_kubeadm_init_extra_opts: ''
+paw_ansible_role_kubernetes::kubernetes_join_command_extra_opts: ''
+paw_ansible_role_kubernetes::kubernetes_allow_pods_on_control_plane: true
+paw_ansible_role_kubernetes::kubernetes_pod_network:
+  cni: flannel
+  cidr: 10.244.0.0/16
+paw_ansible_role_kubernetes::kubernetes_kubeadm_kubelet_config_file_path: "/etc/kubernetes/kubeadm-kubelet-config.yaml"
+paw_ansible_role_kubernetes::kubernetes_config_kubelet_configuration:
+  cgroupDriver: systemd
+paw_ansible_role_kubernetes::kubernetes_config_init_configuration:
+  localAPIEndpoint:
+    advertiseAddress: "{{ kubernetes_apiserver_advertise_address | default(ansible_default_ipv4.address,
+      true) }}"
+paw_ansible_role_kubernetes::kubernetes_config_cluster_configuration:
+  networking:
+    podSubnet: "{{ kubernetes_pod_network.cidr }}"
+  kubernetesVersion: "{{ kubernetes_version_kubeadm }}"
+paw_ansible_role_kubernetes::kubernetes_config_kube_proxy_configuration: {}
+paw_ansible_role_kubernetes::kubernetes_apiserver_advertise_address: ''
+paw_ansible_role_kubernetes::kubernetes_version_kubeadm: stable-{{ kubernetes_version
+  }}
+paw_ansible_role_kubernetes::kubernetes_ignore_preflight_errors: all
+paw_ansible_role_kubernetes::kubernetes_apt_release_channel: stable
+paw_ansible_role_kubernetes::kubernetes_apt_repository: https://pkgs.k8s.io/core:/{{
+  kubernetes_apt_release_channel }}:/v{{ kubernetes_version }}/deb/
+paw_ansible_role_kubernetes::kubernetes_yum_base_url: https://pkgs.k8s.io/core:/stable:/v{{
+  kubernetes_version }}/rpm/
+paw_ansible_role_kubernetes::kubernetes_yum_gpg_key: https://pkgs.k8s.io/core:/stable:/v{{
+  kubernetes_version }}/rpm/repodata/repomd.xml.key
+paw_ansible_role_kubernetes::kubernetes_yum_gpg_check: true
+paw_ansible_role_kubernetes::kubernetes_yum_repo_gpg_check: true
+paw_ansible_role_kubernetes::kubernetes_flannel_manifest_file: https://raw.githubusercontent.com/flannel-io/flannel/master/Documentation/kube-flannel.yml
+paw_ansible_role_kubernetes::kubernetes_calico_manifest_file: https://projectcalico.docs.tigera.io/manifests/calico.yaml
